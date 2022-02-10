@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>board</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Endgame modal -->
+  <ion-modal [isOpen]="gameState > 0 ? 'true' : 'false'">
+    <ng-template>
+      <div id="finish-modal">
+        <h1>{{ gameState === 1 ? 'Gagné' : 'Perdu' }}!</h1>
+        <p>La solution était {{ gameState === 1 ? 'bien ' : '' }}{{ solutionWord }}</p>
+        <ion-button (click)="reset()">Rejouer!</ion-button>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Settings modal -->
+  <ion-modal [isOpen]="settingsOpen">
+    <ng-template>
+      <h1>Options</h1>
+
+      <ion-item>
+        <ion-label>Longueur des mots</ion-label>
+        <ion-select [(ngModel)]="wordLength" cancelText="Dismiss">
+          <ion-select-option disabled="true" aria-selected="true">-</ion-select-option>
+          <ion-select-option value="4">4</ion-select-option>
+          <ion-select-option value="5">5</ion-select-option>
+          <ion-select-option value="6">6</ion-select-option>
+          <ion-select-option value="7">7</ion-select-option>
+          <ion-select-option value="8">8</ion-select-option>
+          <ion-select-option value="9">9</ion-select-option>
+          <ion-select-option value="10">10</ion-select-option>
+          <ion-select-option value="11">11</ion-select-option>
+          <ion-select-option value="12">12</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Nombre d'essais</ion-label>
+        <ion-select [(ngModel)]="colHeight" cancelText="Dismiss">
+          <ion-select-option disabled="true" aria-selected="true">-</ion-select-option>
+          <ion-select-option value="4">Très difficile</ion-select-option>
+          <ion-select-option value="5">Difficile</ion-select-option>
+          <ion-select-option value="6">Normal</ion-select-option>
+          <ion-select-option value="7">Facile</ion-select-option>
+          <ion-select-option value="8">Très facile</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Langage</ion-label>
+        <ion-select [(ngModel)]="language" cancelText="Dismiss">
+          <ion-select-option value="fr">Français</ion-select-option>
+          <ion-select-option value="en">English</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-button (click)="validateSettings()">Fermer</ion-button>
+
+    </ng-template>
+  </ion-modal>
+
+  <div id="toolbar">
+    <h1>Wordle</h1>
+    <div id="toolbar-buttons">
+      <ion-button (click)="openSettings()">Settings</ion-button>
+      <ion-button (click)="reset()">Recommencer</ion-button>
+    </div>
+  </div>
+  <div id="board">
+    <div *ngFor="let row of rows; let indexRow = index" class="row">
+      <div *ngFor="let cell of row; let indexLetter = index"
+           class="letter {{ cell.getClassesString() }}{{(rowError === indexRow ? 'error' : '')}}
+           {{ (indexRow === currentRowPos && indexLetter === currentColPos ? 'highlighted' : '')}}"
+      >{{ cell.getLetter() }}</div>
+    </div>
+  </div>
+  <hr/>
+  <div id="keyboard">
+    <div *ngFor="let row of keyboardLayout; let index = index" class="keyboard-row">
+      <button *ngFor="let cell of row | keyvalue" class="letter keyboard-letter {{ cell.value.getClassesString() }}" (click)="letterInput(cell.value.getLetter(), index, +cell.key)">{{ cell.value.getLetter() }}</button>
+      <button *ngIf="index === keyboardLayout.length - 1" class="letter keyboard-letter keyboard-big-letter" (click)="backspaceInput()">Effacer</button>
+      <button *ngIf="index === keyboardLayout.length - 1" class="letter keyboard-letter keyboard-big-letter" (click)="validate()">Valider</button>
+    </div>
+  </div>
+</ion-content>
